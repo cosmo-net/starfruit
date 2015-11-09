@@ -218,76 +218,6 @@ def new_resource(db, struct, collection=None, scheme=None):
 
     raise gen.Return(message)
 
-@gen.coroutine
-def resource_exists(db, struct):
-    '''
-        resource_exists
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def last_modified(db, struct):
-    '''
-        last_modified
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def moved_permanently(db, struct):
-    '''
-        moved_permanently
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def moved_temporarily(db, struct):
-    '''
-        moved_temporarily
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def previously_existed(db, struct):
-    '''
-        previosly_existed
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def resource_exists(db, struct):
-    '''
-        resource_exists
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def forbidden_resource(db, struct):
-    '''
-        forbidden_resource
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def delete_resource(db, struct):
-    '''
-        delete_resource
-
-        exist, exists, existed
-    '''
-
-@gen.coroutine
-def delete_completed(db, struct):
-    '''
-        delete_resource
-    '''
-
 def clean_message(struct):
     '''
         clean message structure
@@ -472,3 +402,73 @@ def parse_args(parser):
 
     return options, args
 
+
+@gen.coroutine
+def resource_exists(db, struct):
+    '''
+        resource_exists
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def last_modified(db, struct):
+    '''
+        last_modified
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def moved_permanently(db, struct):
+    '''
+        moved_permanently
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def moved_temporarily(db, struct):
+    '''
+        moved_temporarily
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def previously_existed(db, struct):
+    '''
+        previosly_existed
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def resource_exists(db, struct):
+    '''
+        resource_exists
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def forbidden_resource(db, struct):
+    '''
+        forbidden_resource
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def delete_resource(db, struct):
+    '''
+        delete_resource
+
+        exist, exists, existed
+    '''
+
+@gen.coroutine
+def delete_completed(db, struct):
+    '''
+        delete_resource
+    '''
