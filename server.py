@@ -33,7 +33,7 @@ from tornado import web
 
 # from tornado import websocket
 
-from starfruit import TornadoAdapter, StarFruitProtocol
+from starfruit.tools.adapter import TornadoAdapter, StarFruitProtocol
 
 from starfruit.system import records as record_tools # WTF?
 

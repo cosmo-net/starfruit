@@ -20,7 +20,7 @@ import motor
 import logging
 
 from tornado import gen
-from starfruit.tools import errors
+from starfruit import errors
 
 from starfruit.messages import asterisks
 
