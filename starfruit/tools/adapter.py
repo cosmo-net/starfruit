@@ -70,8 +70,23 @@ class StarFruitProtocol(AMIProtocol):
         self.loop = loop
         self.options = options
 
+        self.setup_event_handlers()
 
-
+    def setup_event_handlers(self):
+        """
+        Setup the AMI event handlers required for call tracking.
+        This is implicitly called on __init__().
+        
+        self.ami.register_event_handler('VarSet', self.on_var_set)
+        self.ami.register_event_handler('LocalBridge', self.on_local_bridge)
+        self.ami.register_event_handler('Dial', self.on_dial)
+        self.ami.register_event_handler('Newstate', self.on_new_state)
+        self.ami.register_event_handler('Hangup', self.on_hangup)
+        # Yes, there's an event called "OriginateResponse"
+        self.ami.register_event_handler('OriginateResponse', self.on_originate_response)
+        """
+        self.register_event_handler('Ping', self.do_on_ping)
+        
     def connection_made(self, transport):
         log.info("Connection made")
         super(StarFruitProtocol, self).connection_made(transport)
@@ -91,7 +106,6 @@ class StarFruitProtocol(AMIProtocol):
 
     def login_successful(self, resp):
         log.info("Successfully logged in")
-
         a = self.send_action('Ping', {})
         a.on_result = self.pong
         a.on_exception = self.ping_failed
@@ -100,9 +114,24 @@ class StarFruitProtocol(AMIProtocol):
         log.error("Failed logging in: %s", exc)
         self.transport.close()
 
+    def do_on_ping(self, event):
+        h = event.headers
+        log.info(h)
+
     def pong(self, resp):
         log.info("Pong")
 
+        b = self.send_action('QueueSummary', {})
+        b.on_result = self.pongo
+        b.on_exception = self.pingo_failed
+
     def ping_failed(self, exc):
         log.error("Failed ping in: %s", exc)
+
+    def pingo_failed(self, exc):
+        log.error("Failed ping in: %s", exc)
+
+    def pongo(self, resp):
+        log.info('b response ListCommands')
+        log.info(resp)
 
