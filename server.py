@@ -50,6 +50,8 @@ from starfruit.handlers import asterisks
 
 from zmq.eventloop import ioloop
 
+from tornado.iostream import IOStream
+
 
 # ioloop
 ioloop.install()
@@ -139,7 +141,7 @@ def main():
     more_options, args = parse_args(parser)
 
     # Set document database
-    document = motor.MotorClient(opts.starfruit_host, opts.starfruit_port).starfruit
+    document = motor.MotorClient(opts.mongo_host, opts.mongo_port).starfruit
 
     # Set memcached backend
     memcache = mc.Client(

@@ -60,7 +60,7 @@ def options():
     # Server settings
     tornado.options.define('host', default='127.0.0.1', type=str,
                            help=('Server hostname'))
-    tornado.options.define('port', default=8888, type=int,
+    tornado.options.define('port', default=3888, type=int,
                            help=('Server port'))
     
     # MongoDB database settings
