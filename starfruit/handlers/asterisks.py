@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-    Starfruit HTTP addresses handlers.
+    Starfruit HTTP asterisks handlers.
 '''
 
 # This file is part of starfruit.
@@ -212,14 +212,14 @@ class Handler(asterisks.Asterisks, BaseHandler):
 
         account = self.request.arguments.get('account', [None])[0]
 
-        logging.info('account {0} uuid {1} struct {2}'.format(account, address_uuid, struct))
+        logging.info('account {0} uuid {1} struct {2}'.format(account, asterisk_uuid, struct))
 
-        result = yield self.modify_address(account, address_uuid, struct)
+        result = yield self.modify_asterisk(account, asterisk_uuid, struct)
 
         if not result:
             self.set_status(400)
             system_error = errors.Error('missing')
-            error = system_error.missing('address', address_uuid)
+            error = system_error.missing('asterisk', asterisk_uuid)
             self.finish(error)
             return
 
@@ -230,23 +230,23 @@ class Handler(asterisks.Asterisks, BaseHandler):
     @gen.coroutine
     def put(self):
         '''
-            Put addresses handler
+            Put asterisks handler
         '''
         pass
 
     ##@web.authenticated
     @gen.coroutine
-    def delete(self, address_uuid):
+    def delete(self, asterisk_uuid):
         '''
-            Delete addresses handler
+            Delete asterisks handler
         '''
-        address_uuid = address_uuid.rstrip('/')
-        result = yield self.remove_address(address_uuid)
+        asterisk_uuid = asterisk_uuid.rstrip('/')
+        result = yield self.remove_asterisk(asterisk_uuid)
 
         if not result['n']:
             self.set_status(400)
             system_error = errors.Error('missing')
-            error = system_error.missing('address', address_uuid)
+            error = system_error.missing('asterisk', asterisk_uuid)
             self.finish(error)
             return
 
@@ -257,9 +257,9 @@ class Handler(asterisks.Asterisks, BaseHandler):
 @content_type_validation
 class PublicHandler(asterisks.Asterisks, BaseHandler):
     '''
-        Starfruit public addresses handler
+        Starfruit public asterisks handler
         
-        Public addresses handler
+        Public asterisks handler
     '''
     
     @gen.coroutine
@@ -267,9 +267,9 @@ class PublicHandler(asterisks.Asterisks, BaseHandler):
         '''
             Get public handler
         '''
-        # get public details: address get_address_list without an account
+        # get public details: asterisk get_asterisk_list without an account
         account = None
-        result = yield self.get_address_list(account=account,
+        result = yield self.get_asterisk_list(account=account,
                                             lapse=None,
                                             status='all',
                                             start=None,
@@ -280,7 +280,7 @@ class PublicHandler(asterisks.Asterisks, BaseHandler):
 
 
 @content_type_validation
-class UnassignedHandler(addresses.Addresses, BaseHandler):
+class UnassignedHandler(asterisks.Asterisks, BaseHandler):
     '''
         Unassigned requests handler
     '''
@@ -290,7 +290,7 @@ class UnassignedHandler(addresses.Addresses, BaseHandler):
         '''
             Get unassigned handler
         '''
-        result = yield self.get_unassigned_addresses(lapse=None,
+        result = yield self.get_unassigned_asterisks(lapse=None,
                                                    start=None,
                                                    end=None,
                                                    page_num=page_num)
