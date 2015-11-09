@@ -20,7 +20,6 @@ from tornado import web
 
 from zmq.eventloop import ioloop
 
-from starfruit.system import basic_authentication
 
 from starfruit.messages import asterisks as _asterisks
 
@@ -292,9 +291,9 @@ class BaseHandler(web.RequestHandler):
         raise gen.Return(address.get('uuid'))
 
 
-class StarfruitHandler(BaseHandler):
+class CarambolaHandler(BaseHandler):
     '''
-        Starfruit Handler Quote experiment
+        Carambola Handler Quote experiment
     '''
 
     @gen.coroutine

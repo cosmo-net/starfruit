@@ -23,8 +23,8 @@ import pandas as pd
 
 from tornado import gen
 
-from stafruit.messages import asterisks
-from stafruit.messages import reports # WTF?
+from starfruit.messages import asterisks
+#from starfruit.messages import reports # WTF?
 
 from starfruit.tools import clean_structure
 from starfruit.tools import clean_results

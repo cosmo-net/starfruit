@@ -42,7 +42,7 @@ from starfruit.tools import options
 from starfruit.tools import indexes
 from starfruit.tools import periodic
 
-from starfruit.tools import new_resource, zmq_external_logger
+from starfruit.tools import new_resource, zmq_external_logger, create_parser, parse_args
 
 from starfruit.handlers import CarambolaHandler
 

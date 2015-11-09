@@ -11,15 +11,19 @@
 __author__ = 'Jean Chassoul'
 
 
+import sys
 import time
 import arrow
 import datetime
 import ujson as json
 import motor
-
+import argparse
 import logging
 
 from tornado import gen
+
+from starfruit.tools.adapter import CLIOptions
+
 from starfruit import errors
 
 from starfruit.messages import asterisks
