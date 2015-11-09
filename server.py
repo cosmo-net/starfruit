@@ -135,10 +135,10 @@ def main():
     # daemon options
     opts = options.options()
     # Come on dude, grow this fruit up
-    parser = create_parser(
-        description="Tornado-based AMI starfruit client")
+    #parser = create_parser(
+    #    description="Tornado-based AMI starfruit client")
     # more options base on argument parser
-    more_options, args = parse_args(parser)
+    #more_options, args = parse_args(parser)
 
     # Set document database
     document = motor.MotorClient(opts.mongo_host, opts.mongo_port).starfruit
@@ -265,13 +265,21 @@ def main():
     loop = ioloop.IOLoop.instance()
 
     # Setting up starfruit protocol listener
+
+    more_options = {
+        'username': opts.ami_user,
+        'secret': opts.ami_secret,
+        'host': opts.ami_host,
+        'port': opts.ami_port
+    }
     
     proto = StarFruitProtocol(loop, more_options)
 
     adapter = TornadoAdapter(proto)
     logging.info('Listening starfruit on tcp://%s:%s' % (opts.host, opts.port))
     stream = IOStream(socket.socket(), loop)
-    stream.connect((more_options.host, more_options.port),
+
+    stream.connect((opts.ami_host, int(opts.ami_port)),
                    lambda: adapter.bind_stream(stream))
 
     try:

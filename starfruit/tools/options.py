@@ -57,6 +57,19 @@ def options():
                             help=('Application domain, e.g. "example.com"')
     )
 
+    tornado.options.define('ami_secret', default='Cc0d3Mmach1n3Mmanager', type=str,
+                            help=('AMI secret')
+    )
+    tornado.options.define('ami_user', default='c0d3manag3r', type=str,
+                            help=('AMI username')
+    )
+    tornado.options.define('ami_host', default='sip.codemachine.io', type=str,
+                            help=('AMI hostname')
+    )
+    tornado.options.define('ami_port', default=7542, type=int,
+                            help=('AMI TCP port')
+    )
+
     # Server settings
     tornado.options.define('host', default='127.0.0.1', type=str,
                            help=('Server hostname'))

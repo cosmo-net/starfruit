@@ -70,20 +70,22 @@ class StarFruitProtocol(AMIProtocol):
         self.loop = loop
         self.options = options
 
+
+
     def connection_made(self, transport):
         log.info("Connection made")
-        super(CodeMachineProtocol, self).connection_made(transport)
+        super(StarFruitProtocol, self).connection_made(transport)
 
     def connection_lost(self, exc):
         log.info("Connection lost")
-        super(CodeMachineProtocol, self).connection_lost(exc)
+        super(StarFruitProtocol, self).connection_lost(exc)
         self.loop.stop()
 
     def greeting_received(self, api_name, api_version):
         log.info("Asterisk greeting: %r, %r", api_name, api_version)
 
-        a = self.send_action('Login', {'username': self.options.username,
-                                       'secret': self.options.secret})
+        a = self.send_action('Login', {'username': self.options.get('username'),
+                                       'secret': self.options.get('secret')})
         a.on_result = self.login_successful
         a.on_exception = self.login_failed
 
