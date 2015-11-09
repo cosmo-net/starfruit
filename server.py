@@ -18,7 +18,7 @@ import zmq
 import sys
 import uuid
 import itertools
-
+import socket
 import logging
 
 import motor
@@ -32,6 +32,8 @@ from tornado import gen
 from tornado import web
 
 # from tornado import websocket
+
+from starfruit import TornadoAdapter, StarFruitProtocol
 
 from starfruit.system import records as record_tools # WTF?
 
@@ -118,17 +120,23 @@ def periodic_get_records():
     ))
 
 
+
+
 def main():
     '''
-        Manage Asynchronous Number General ORGs
-
-        Organizations of Roman Generality.
+        Starfruit communication carambolas.
     '''
+    log = logging.getLogger(__name__)
     # daemon options
     opts = options.options()
+    # Come on dude, grow this fruit up
+    parser = create_parser(
+        description="Tornado-based AMI starfruit client")
+    # more options base on argument parser
+    more_options, args = parse_args(parser)
 
     # Set document database
-    document = motor.MotorClient(opts.mongo_host, opts.mongo_port).mango
+    document = motor.MotorClient(opts.starfruit_host, opts.starfruit_port).starfruit
 
     # Set memcached backend
     memcache = mc.Client(
@@ -192,7 +200,7 @@ def main():
         global logger
         logger = zmq_external_logger()
 
-    # mango web application daemon
+    # starfruit web application daemon
     application = web.Application(
 
         [
@@ -241,14 +249,30 @@ def main():
         login_url='/login/'
     )
 
-    # Mango periodic cast callbacks
-    periodic_records = PeriodicCast(periodic_get_records, 5000)
-    periodic_records.start()
+    # Starfruit periodic cast callbacks
+    #periodic_records = PeriodicCast(periodic_get_records, 5000)
+    #periodic_records.start()
 
-    # Setting up mango processor
+    # Setting up starfruit HTTP listener
     application.listen(opts.port)
     logging.info('Listening on http://%s:%s' % (opts.host, opts.port))
-    ioloop.IOLoop.instance().start()
+    
+    loop = ioloop.IOLoop.instance()
+
+    # Setting up starfruit protocol listener
+    
+    proto = StarFruitProtocol(loop, more_options)
+
+    adapter = TornadoAdapter(proto)
+    logging.info('Listening starfruit on tcp://%s:%s' % (opts.host, opts.port))
+    stream = IOStream(socket.socket(), loop)
+    stream.connect((more_options.host, more_options.port),
+                   lambda: adapter.bind_stream(stream))
+
+    try:
+        loop.start()
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == '__main__':
