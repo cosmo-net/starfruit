@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 '''
-    Mango addresses system logic functions.
+    Starfruit asterisks system logic functions.
 '''
 
-# This file is part of mango.
+# This file is part of stafruit.
 
 # Distributed under the terms of the last AGPL License.
 # The full license is in the file LICENCE, distributed as part of this software.
@@ -23,36 +23,35 @@ import pandas as pd
 
 from tornado import gen
 
-from mango.messages import addresses
-from mango.messages import reports
+from stafruit.messages import asterisks
+from stafruit.messages import reports # WTF?
 
-from mango.tools import clean_structure
-from mango.tools import clean_results
-from mango.tools import check_times
+from starfruit.tools import clean_structure
+from starfruit.tools import clean_results
+from starfruit.tools import check_times
 
 
-class Addresses(object):
+class Asterisks(object):
     '''
-        Addresses resources
+        Asterisks resources
     '''
 
     @gen.coroutine
-    def get_address(self, account, address_uuid):
+    def get_asterisk(self, account, asterisk_uuid):
         '''
-            Get a detail address
+            Get a detail asterisk
         '''
         if not account:
-            address = yield self.db.addresses.find_one({'uuid':address_uuid},{'_id':0})
+            asterisk = yield self.db.asterisks.find_one({'uuid':asterisk_uuid},{'_id':0})
         else:
-
-            # change accountcode to account, because the accountcode is a uuid
-            # and we're expecting an account name.
-
-            address = yield self.db.addresses.find_one({'uuid':address_uuid,'account':account},{'_id':0})
+            asterisk = yield self.db.asterisks.find_one({
+                'uuid':asterisk_uuid,
+                'account':account
+            },{'_id':0})
         try:
-            if address:
-                address = addresses.Address(address)
-                address.validate()
+            if asterisk:
+                asterisk = asterisks.Asterisk(asterisk)
+                asterisk.validate()
         except Exception, e:
             # catch some daemon here!
             # so we send the exception down the drain, down the the rat hole, the rabbit hole, etc
@@ -61,16 +60,16 @@ class Addresses(object):
             raise e
         # we use this last finally to raise gen.Return only because of python version 2.7 stuff
         finally:
-            raise gen.Return(address)
+            raise gen.Return(asterisk)
 
     @gen.coroutine
-    def get_address_list(self, account, start, end, lapse, status, page_num):
+    def get_asterisk_list(self, account, start, end, lapse, status, page_num):
         '''
-            Get detail addresses 
+            Get detail asterisks 
         '''
         page_num = int(page_num)
         page_size = self.settings['page_size']
-        address_list = []
+        asterisk_list = []
         message = None
         query = {'public':False}
 
@@ -78,14 +77,15 @@ class Addresses(object):
             query['status'] = status
         
         if not account:
-            query = self.db.addresses.find(query,
+            query = self.db.asterisks.find(query,
                                        {'_id':0, 'comments':0})
         elif type(account) is list:
+            # really?
             accounts = [{'accountcode':a, 'assigned': True} for a in account]
-            query = self.db.addresses.find({'$or':accounts},
+            query = self.db.asterisks.find({'$or':accounts},
                                        {'_id':0, 'comments':0})
         else:
-            query = self.db.addresses.find({'accountcode':account,
+            query = self.db.asterisks.find({'accountcode':account,
                                         'assigned':True},
                                        {'_id':0, 'comments':0})
         
@@ -95,14 +95,14 @@ class Addresses(object):
             
             while (yield query.fetch_next):
                 result = query.next_object()
-                address_list.append(addresses.Address(result))
+                asterisk_list.append(asterisks.Asterisk(result))
 
         except Exception, e:
             logging.exception(e)
             raise e
 
         try:
-            struct = {'results': address_list}
+            struct = {'results': asterisk_list}
 
             # reports BaseGoal? da faq??
             
@@ -117,9 +117,9 @@ class Addresses(object):
             raise gen.Return(message)
     
     @gen.coroutine
-    def get_unassigned_addresses(self, start, end, lapse, page_num):
+    def get_unassigned_asterisks(self, start, end, lapse, page_num):
         '''
-            Get unassigned addresses
+            Get unassigned asterisks
         '''
         page_num = int(page_num)
         page_size = self.settings['page_size']
@@ -127,12 +127,12 @@ class Addresses(object):
         
         # or $exist = false ?
 
-        query = self.db.addresses.find({'assigned':False})
+        query = self.db.asterisks.find({'assigned':False})
         query = query.sort([('uuid', -1)]).skip(page_num * page_size).limit(page_size)
         
         try:
-            for address in (yield query.to_list()):
-                result.append(addresses.Address(address))
+            for asterisk in (yield query.to_list()):
+                result.append(asterisks.Asterisk(asterisk))
             
             struct = {'results':result}
 
@@ -147,64 +147,64 @@ class Addresses(object):
 
 
     @gen.coroutine
-    def new_address(self, struct):
+    def new_asterisk(self, struct):
         '''
-            Create a new address entry
+            Create a new asterisk entry
         '''
         try:
-            address = addresses.Address(struct)
-            address.validate()
+            asterisk = asterisks.Asterisk(struct)
+            asterisk.validate()
         except Exception, e:
             logging.exception(e)
             raise e
 
-        address = clean_structure(address)
+        asterisk = clean_structure(asterisk)
 
-        result = yield self.db.addresses.insert(address)
+        result = yield self.db.asterisks.insert(asterisk)
 
-        raise gen.Return(address.get('uuid'))
+        raise gen.Return(asterisk.get('uuid'))
 
     @gen.coroutine
-    def set_assigned_flag(self, account, address_uuid):
+    def set_assigned_flag(self, account, asterisk_uuid):
         '''
-            Set the address assigned flag
+            Set the asterisk assigned flag
         '''
-        logging.info('set_assigned_flag account: %s, address: %s' % (account, address_uuid))
+        logging.info('set_assigned_flag account: %s, asterisk: %s' % (account, asterisk_uuid))
 
-        result = yield self.db.addresses.update(
-                                {'uuid':address_uuid, 
+        result = yield self.db.asterisks.update(
+                                {'uuid':asterisk_uuid, 
                                  'accountcode':account}, 
                                 {'$set': {'assigned': True}})
         
         raise gen.Return(result)
 
     @gen.coroutine
-    def remove_address(self, address_uuid):
+    def remove_asterisk(self, asterisk_uuid):
         '''
-            Remove a address entry
+            Remove a asterisk entry
         '''
-        result = yield self.db.addresses.remove({'uuid':address_uuid})
+        result = yield self.db.asterisks.remove({'uuid':asterisk_uuid})
         raise gen.Return(result)
 
     @gen.coroutine
-    def modify_address(self, account, address_uuid, struct):
+    def modify_asterisk(self, account, asterisk_uuid, struct):
         '''
-            Modify address
+            Modify asterisk
         '''
         try:
             logging.info(struct)
-            address = addresses.ModifyAddress(struct)
-            address.validate()
-            address = clean_structure(address)
+            asterisk = asterisks.ModifyAsterisk(struct)
+            asterisk.validate()
+            asterisk = clean_structure(asterisk)
         except Exception, e:
             logging.error(e)
             raise e
 
         try:
-            result = yield self.db.addresses.update(
+            result = yield self.db.asterisks.update(
                 {'account':account,
-                 'uuid':address_uuid},
-                {'$set':address}
+                 'uuid':asterisk_uuid},
+                {'$set':asterisk}
             )
             logging.info(result)            
         except Exception, e:
@@ -214,9 +214,9 @@ class Addresses(object):
         raise gen.Return(bool(result.get('n')))
 
     @gen.coroutine
-    def replace_address(self, struct):
+    def replace_asterisk(self, struct):
         '''
-            Replace a existent address entry
+            Replace a existent asterisk entry
         '''
         # put implementation
         pass

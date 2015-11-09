@@ -25,8 +25,7 @@ import ujson as json
 from tornado import gen
 from tornado import web
 
-from starfruit.system import accounts
-from starfruit.system import addresses
+from starfruit.system import asterisks
 
 from starfruit.tools import content_type_validation
 from starfruit.tools import check_json
@@ -39,41 +38,41 @@ from starfruit.handlers import BaseHandler
 
 
 @content_type_validation
-class PrimaryHandler(addresses.Addresses, accounts.Accounts, BaseHandler):
+class PrimaryHandler(asterisks.Asterisks, BaseHandler):
     '''
-        Addresses HTTP request handlers
+        Asterisks HTTP request handlers
     '''
 
     @gen.coroutine
-    def get(self, address_uuid=None, start=None, end=None, page_num=0, lapse='hours'):
+    def get(self, asterisk_uuid=None, start=None, end=None, page_num=0, lapse='hours'):
         '''
-            Get primary addresses handler
+            Get primary asterisks handler
         '''
-        if address_uuid:
-            message = 'crash on address_uuid on now handler'
+        if asterisk_uuid:
+            message = 'crash on asterisk_uuid on now handler'
             self.set_status(500)
             self.finish(message)
             return
-        result = yield self.get_address_list(account=None,
+        result = yield self.get_asterisk_list(account=None,
                                           lapse=lapse,
                                           start=start,
                                           end=end,
-                                          status='primary',
+                                          status='active',
                                           page_num=page_num)
         result = json.dumps(result)
         self.finish(result)
 
 
 @content_type_validation
-class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
+class Handler(asterisks.Asterisks, BaseHandler):
     '''
-        Addresses HTTP request handlers
+        Asterisks HTTP request handlers
     '''
 
     @gen.coroutine
-    def get(self, address_uuid=None, start=None, end=None, page_num=0, lapse='hours'):
+    def get(self, asterisk_uuid=None, start=None, end=None, page_num=0, lapse='hours'):
         '''
-            Get addresses handler
+            Get asterisks handler
         '''
         status = 'all'
         # -- logging info
@@ -85,23 +84,23 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
         # query string checked from string to boolean
         #checked = str2bool(str(self.request.arguments.get('checked', [False])[0]))
 
-        if address_uuid:
-            address_uuid = address_uuid.rstrip('/')
+        if asterisk_uuid:
+            asterisk_uuid = asterisk_uuid.rstrip('/')
 
             if self.current_user:
                 user = self.current_user
-                address = yield self.get_address(user, address_uuid)
+                asterisk = yield self.get_asterisk(user, asterisk_uuid)
             else:
-                address = yield self.get_address(None, address_uuid)
+                asterisk = yield self.get_asterisk(None, asterisk_uuid)
 
-            if not address:
+            if not asterisk:
                 self.set_status(400)
                 system_error = errors.Error('missing')
-                error = system_error.missing('address', address_uuid)
+                error = system_error.missing('asterisk', asterisk_uuid)
                 self.finish(error)
                 return
 
-            self.finish(clean_structure(address))
+            self.finish(clean_structure(asterisk))
             return
 
         if self.current_user:
@@ -110,7 +109,7 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
             
             account_list = (orgs['orgs'] if orgs else False)
             if not account_list:
-                result = yield self.get_address_list(
+                result = yield self.get_sterisk_list(
                                         account=user, 
                                         lapse=lapse,
                                         status=status,
@@ -119,7 +118,7 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
                                         page_num=page_num)
             else:
                 account_list.append(user)
-                result = yield self.get_address_list(
+                result = yield self.get_asterisk_list(
                                         account=account_list,
                                         lapse=lapse,
                                         status=status,
@@ -127,7 +126,7 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
                                         end=end,
                                         page_num=page_num)
         else:
-            result = yield self.get_address_list(
+            result = yield self.get_asterisk_list(
                                     account=None,
                                     lapse=lapse,
                                     status=status,
@@ -142,7 +141,7 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
     @gen.coroutine
     def post(self):
         '''
-            POST addresses handler
+            POST asterisks handler
         '''
         struct = yield check_json(self.request.body)
         db = self.settings['db']
@@ -153,12 +152,12 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
             self.finish({'JSON':format_pass})
             return
 
-        address = yield self.new_address(struct)
+        asterisk = yield self.new_asterisk(struct)
  
-        if not address:
-            model = 'Addresses'
-            error = {'address':False}
-            reason = {'duplicates':[('Address', 'uniqueid'), (model, 'uuid')]}
+        if not asterisk:
+            model = 'Asterisks'
+            error = {'asterisk':False}
+            reason = {'duplicates':[('Asterisk', 'uniqueid'), (model, 'uuid')]}
 
             message = yield self.let_it_crash(struct, model, error, reason)
 
@@ -172,8 +171,8 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
 
             resource = {
                 'account': account,
-                'resource':'addresses',
-                'uuid':address
+                'resource':'asterisks',
+                'uuid':asterisk
             }
 
             exist = yield self.check_exist(account)
@@ -185,18 +184,18 @@ class Handler(addresses.Addresses, accounts.Accounts, BaseHandler):
 
                 logging.info('update %s' % update)
 
-                flag = yield self.set_assigned_flag(account, address)
+                flag = yield self.set_assigned_flag(account, asterisk)
 
-        logging.info('new spawned address %s ' % address)
+        logging.info('new spawned asterisk %s ' % asterisk)
 
         self.set_status(201)
-        self.finish({'uuid':address})
+        self.finish({'uuid':asterisk})
 
     ##@web.authenticated
     @gen.coroutine
-    def patch(self, address_uuid):
+    def patch(self, asterisk_uuid):
         '''
-            Modify address
+            Modify asterisk
         '''
         logging.info('request.arguments {0}'.format(self.request.arguments))
         logging.info('request.body {0}'.format(self.request.body))
