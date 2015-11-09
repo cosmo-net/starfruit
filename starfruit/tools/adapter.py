@@ -1,7 +1,7 @@
 """
 AMI adapter for the Tornado network programming framework.
 """
-
+import logging
 
 from starfruit.system.protocol.ami import AMIProtocol
 
@@ -63,7 +63,7 @@ class CLIOptions(object):
     pass
 
 
-class StarfruitProtocol(AMIProtocol):
+class StarFruitProtocol(AMIProtocol):
 
     def __init__(self, loop, options):
         AMIProtocol.__init__(self)

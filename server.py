@@ -35,7 +35,8 @@ from tornado import web
 
 from starfruit.tools.adapter import TornadoAdapter, StarFruitProtocol
 
-from starfruit.system import records as record_tools # WTF?
+#from starfruit.system import records as record_tools # WTF? kind of important and shit ...
+# maybe think on a better name?
 
 from starfruit.tools import options
 from starfruit.tools import indexes
@@ -81,7 +82,7 @@ def periodic_get_records():
         periodic_get_records callback function
     '''
     start = time.time()
-    recs = record_tools.Records()
+    #recs = record_tools.Records()
     raw_records = yield [
         #periodic.get_raw_records(sql, 888),
         periodic.get_query_records(sql, 1000),
@@ -97,7 +98,7 @@ def periodic_get_records():
 
         for stuff in results:
 
-            record = yield recs.new_detail_record(stuff, db)
+            #record = yield recs.new_detail_record(stuff, db)
 
             checked = yield periodic.checked_flag(sql, record.get('uniqueid'))
 
