@@ -85,7 +85,7 @@ def periodic_get_records():
     #recs = record_tools.Records()
     raw_records = yield [
         #periodic.get_raw_records(sql, 888),
-        periodic.get_query_records(sql, 1000),
+        #periodic.get_query_records(sql, 1000),
 
         #periodic.process_assigned_false(db),
         #periodic.process_assigned_records(db),
@@ -98,9 +98,11 @@ def periodic_get_records():
 
         for stuff in results:
 
+            logging.error(stuff)
+
             #record = yield recs.new_detail_record(stuff, db)
 
-            checked = yield periodic.checked_flag(sql, record.get('uniqueid'))
+            #checked = yield periodic.checked_flag(sql, record.get('uniqueid'))
 
             #flag = yield periodic.assign_record(
             #    db,
@@ -117,7 +119,7 @@ def periodic_get_records():
 
     logging.info('it takes {0} processing periodic {1}'.format(
         periodic_take,
-        'callbacks for records resource.'
+        'casts for asterisk resources'
     ))
 
 

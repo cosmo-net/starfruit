@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 '''
-    Mango HTTP base handlers.
+    Starfruit HTTP base handlers.
 '''
 
-# This file is part of mango.
+# This file is part of starfruit.
 
 # Distributed under the terms of the last AGPL License.
 # The full license is in the file LICENCE, distributed as part of this software.
@@ -20,16 +20,16 @@ from tornado import web
 
 from zmq.eventloop import ioloop
 
-from mango.system import basic_authentication
+from starfruit.system import basic_authentication
 
-from mango.messages import addresses as _addresses
-from mango.messages import tasks as _tasks
+from starfruit.messages import asterisks as _asterisks
 
-from mango.tools import clean_structure
-from mango.tools import check_account_authorization
-from mango.tools import errors
+from starfruit.tools import clean_structure
+from starfruit.tools import check_account_authorization
 
-from mango.tools.quotes import PeopleQuotes
+from starfruit import errors
+
+from starfruit.tools.quotes import PeopleQuotes
 
 import logging
 
@@ -116,7 +116,7 @@ class BaseHandler(web.RequestHandler):
 
     def set_default_headers(self):
         '''
-            Mango default headers
+            Starfruit default headers
         '''
         # if debug set allow all if not set settings domain
         self.set_header("Access-Control-Allow-Origin", '*')
@@ -133,20 +133,6 @@ class BaseHandler(web.RequestHandler):
             Return the account from a secure cookie
         '''
         return self.get_secure_cookie('account')
-
-    @gen.coroutine
-    def catch_down(self, struct, scheme, error, reason):
-        '''
-            Catch down
-        '''
-        pass
-
-    @gen.coroutine
-    def catch_daemon(self, struct, scheme, error, reason):
-        '''
-            Catch daemon
-        '''
-        pass
 
     @gen.coroutine
     def let_it_crash(self, struct, scheme, error, reason):
@@ -306,61 +292,9 @@ class BaseHandler(web.RequestHandler):
         raise gen.Return(address.get('uuid'))
 
 
-@basic_authentication
-class LoginHandler(BaseHandler):
+class StarfruitHandler(BaseHandler):
     '''
-        BasicAuth login
-    '''
-
-    @gen.coroutine
-    def get(self):
-        # redirect next url
-        next_url = '/'
-        args = self.get_arguments('next')
-        if args:
-            next_url = args[0]
-
-        account = yield check_account_authorization(self.db,
-                            self.username,
-                            self.password)
-
-        if not account:
-            # 401 status code?
-            self.set_status(403)
-            # dude! get realm from options.
-            self.set_header('WWW-Authenticate', 'Basic realm=mango')
-            self.finish()
-        else:
-            self.set_secure_cookie('username', self.username)
-            self.username, self.password = (None, None)
-            # self.redirect(next_url)
-            self.set_status(200)
-            self.finish()
-
-    @gen.coroutine
-    def options(self):
-        self.set_status(200)
-        self.finish()
-
-
-class LogoutHandler(BaseHandler):
-    '''
-        BasicAuth logout
-    '''
-
-    @gen.coroutine
-    def get(self):
-        '''
-            Clear secure cookie
-        '''
-        self.clear_cookie('username')
-        self.set_status(200)
-        self.finish()
-
-
-class MangoHandler(BaseHandler):
-    '''
-        Mango Handler Quote experiment
+        Starfruit Handler Quote experiment
     '''
 
     @gen.coroutine

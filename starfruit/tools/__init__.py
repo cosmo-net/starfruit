@@ -169,11 +169,9 @@ def new_resource(db, struct, collection=None, scheme=None):
     from schematics import models as _models
     from schematics import types as _types
 
-    # Trying to find analogies with erlang records
-    # We need more experience on OTP.
-    class MangoResource(_models.Model):
+    class StarfruitResource(_models.Model):
         '''
-            Mango resource
+            Starfruit resource
         '''
         uuid = _types.UUIDType(default=_uuid.uuid4)
         account = _types.StringType(required=False)
@@ -184,7 +182,7 @@ def new_resource(db, struct, collection=None, scheme=None):
     collection = getattr(db, collection)  
 
     try:
-        message = MangoResource(struct)
+        message = StarfruitResource(struct)
         message.validate()
         message = message.to_primitive()
     except Exception, e:
